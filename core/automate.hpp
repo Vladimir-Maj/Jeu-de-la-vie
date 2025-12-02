@@ -1,6 +1,6 @@
+#include "main/fileManager.hpp"
 #include "main/grid.hpp"
 #include "main/rule.hpp"
-#include "main/stateManager.hpp"
 #include "renderer/display.hpp"
 
 class Automate {
@@ -8,7 +8,7 @@ class Automate {
     Grid grid;
     Rule rule;
     Display *display = nullptr;
-    StateManager stateManager;
+    FileManager fm;
 
   public:
     void initialisation(int w, int h) {};
