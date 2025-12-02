@@ -1,55 +1,68 @@
-#include <SFML/Graphics.hpp>
-#include <cstdlib>
-#include <ctime>
-#include <vector>
+#include "core/main/fileManager.hpp"
+#include <filesystem>
+#include <iostream>
+#include <string>
 
-const int cellSize = 10;
-const int gridWidth = 80;
-const int gridHeight = 80;
+int main(int argc, char *argv[]) {
+    int width;
+    int height;
+    bool graphicMode = false;
+    bool makeconfig = false;
+    FileManager fm;
 
-std::vector<std::vector<int>> grid(gridWidth, std::vector<int>(gridHeight));
+    for (int i = 1; i < argc; i++) {
+        std::string flag = argv[i];
+        std::string value = (i + 1 < argc ? argv[i + 1] : "");
 
-void initializeGrid() {
-    std::srand(std::time(0));
-    for (int x = 0; x < gridWidth; ++x) {
-        for (int y = 0; y < gridHeight; ++y) {
-            grid[x][y] =
-                std::rand() % 2; // Randomly initialize cells as alive or dead
-        }
-    }
-}
-
-void renderGrid(sf::RenderWindow &window) {
-    int x, y;
-    window.clear();
-    sf::RectangleShape cell(sf::Vector2f(cellSize - 1.0f, cellSize - 1.0f));
-    for (x = 0; x < gridWidth; ++x) {
-        for (y = 0; y < gridHeight; ++y) {
-            if (grid[x][y] == 1) {
-                cell.setPosition(sf::Vector2f(x * cellSize, y * cellSize));
-                window.draw(cell);
+        if (flag == "--help") {
+            std::cout << "Utilisation:"
+                      << "\n  -lc ou --loadconfig <chemin>"
+                      << "\n  -mc ou --makeconfig <chemin>"
+                      << "\n  -w ou --width <largeur>"
+                      << "\n  -h ou --height <hauteur>"
+                      << "\n  -g ou --graphic (terminal par defaut)"
+                      << std::endl;
+            return 0;
+        } else if (flag == "-w" || flag == "--width") {
+            try {
+                width = std::stoi(value);
+            } catch (const std::exception &e) {
+                std::cerr << "Erreur: valeur invalide pour le flag '" << flag
+                          << "'" << std::endl;
+                return 1;
             }
-        }
+        } else if (flag == "-h" || flag == "--height") {
+            try {
+                height = std::stoi(value);
+            } catch (const std::exception &e) {
+                std::cerr << "Erreur: valeur invalide pour le flag '" << flag
+                          << "'" << std::endl;
+                return 1;
+            }
+        } else if (flag == "-g" || flag == "--graphic") {
+            graphicMode = true;
+        } else if (flag == "-lc" || flag == "--loadconfig") {
+            if (!fm.loadConfig(value)) {
+                return 1;
+            };
+        };
+    };
+
+    if (!width) {
+        std::cout << "Veuillez indiquer la largeur." << std::endl;
+        return 1;
+    } else if (!height) {
+        std::cout << "Veuillez indiquer la hauteur." << std::endl;
+        return 1;
     }
-    window.display();
-}
 
-int main() {
-    sf::RenderWindow window(sf::VideoMode(sf::Vector2u(gridWidth * cellSize,
-                                                       gridHeight * cellSize)),
-                            "Game of Life");
+    std::cout << "### INFORMATIONS ###" << std::endl;
+    std::cout << " - Mode: " << (graphicMode ? "Graphique" : "Console")
+              << std::endl;
+    std::cout << " - Fichier config: " << fm.getFileName() << std::endl;
 
-    initializeGrid();
-
-    while (window.isOpen()) {
-        while (auto event = window.pollEvent()) {
-            if (event->is<sf::Event::Closed>())
-                window.close();
-        }
-
-        renderGrid(window);
-        sf::sleep(sf::milliseconds(100));
+    if (makeconfig) {
+        std::cout << " - Largeur de la grille: " << width << std::endl;
+        std::cout << " - Hauteur de la grille: " << height << std::endl;
     }
-
-    return 0;
-}
+};
