@@ -1,0 +1,1 @@
+//classe pour l’interface graphique (si tu veux séparer proprement)

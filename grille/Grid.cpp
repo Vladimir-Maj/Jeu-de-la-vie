@@ -1,0 +1,1 @@
+//classe représentant la grille (déclaration dans .hpp, implémentation dans .cpp)

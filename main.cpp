@@ -1,0 +1,1 @@
+//point d’entrée du programme, lance le jeu selon les paramètres (fichier d’entrée, mode console/graphique).

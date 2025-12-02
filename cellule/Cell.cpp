@@ -1,0 +1,1 @@
+//classe représentant une cellule (avec états polymorphes).
