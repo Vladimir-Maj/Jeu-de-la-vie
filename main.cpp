@@ -1,1 +1,15 @@
-//point d’entrée du programme, lance le jeu selon les paramètres (fichier d’entrée, mode console/graphique).
+#include <iostream>
+#include <vector>
+#include <string>
+#include <fstream>
+#include "jeu/Game.h"
+#include "grille/Grille.h"
+#include "grille/GrilleClassique.h"
+
+int main()
+{
+    Game Game;
+    Game.lancer();
+    return 0;
+}
+
