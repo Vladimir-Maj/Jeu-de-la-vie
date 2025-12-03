@@ -1,1 +1,0 @@
-//classe abstraite pour les règles (et éventuellement des sous-classes pour les variantes)
