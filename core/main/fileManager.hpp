@@ -90,8 +90,9 @@ class FileManager {
             return false;
         };
 
-        outputPath =
-            "data/outputs/" + this->getFileName().stem().string() + "_out.txt";
+        outputPath = "../data/outputs/" + this->getFileName().stem().string() +
+                     "_out.txt";
+        this->clearOutputFileIfContent();
         return true;
     };
 
@@ -99,20 +100,15 @@ class FileManager {
         return this->filePath.filename();
     };
 
-    void makeOutput() {
-        bool status = std::filesystem::copy_file(
-            this->filePath,
-            "data/outputs/" + this->getFileName().stem().string() + "_out.txt",
-            std::filesystem::copy_options::overwrite_existing);
-        if (!status) {
-            std::cerr << "Erreur: problème lors de la création du fichier de "
-                         "sortie"
-                      << std::endl;
+    void clearOutputFileIfContent() {
+        if (std::filesystem::exists(this->outputPath)) {
+            std::ofstream file(this->outputPath, std::ios::trunc);
+            file.close();
         };
     };
 
     void save(std::unique_ptr<Grid> &grid) {
-        std::ofstream file(this->outputPath);
+        std::ofstream file(this->outputPath, std::ios::app);
 
         if (!file.is_open()) {
             std::cerr << "Erreur: problème lors de l'ouverture du fichier"
@@ -126,6 +122,7 @@ class FileManager {
             }
             file << std::endl;
         };
+        file << std::endl;
 
         file.close();
     };
