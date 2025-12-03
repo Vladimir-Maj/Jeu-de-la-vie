@@ -18,6 +18,7 @@ class Grid {
     };
 
     Cell *getCell(int x, int y) { return &this->cells[y][x]; };
+    std::vector<std::vector<Cell>> getCells() { return this->cells; };
     void setCell(int x, int y, bool state) { cells[y][x].setState(state); };
 
     int getHeight() const { return this->height; };
