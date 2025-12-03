@@ -28,15 +28,19 @@ class GameEngine {
 
     void startSimulation() {
         for (int i = 0; i < this->iterationCount; i++) {
+            fm.save(this->grid);
+
             this->renderer->display(this->grid);
             std::this_thread::sleep_for(std::chrono::seconds(1));
-            std::cout << "\n" << std::endl;
+            std::cout << std::endl;
+
+            std::vector<std::vector<Cell>> tmpCells = grid->getCells();
 
             for (int y = 0; y < grid->getHeight(); y++) {
                 for (int x = 0; x < grid->getWidth(); x++) {
                     std::vector<Cell *> neighbors = grid->getNeighbors(x, y);
-                    Cell *cell = grid->getCell(x, y);
-                    int aliveNeighbors = grid->checkCell(neighbors);
+                    Cell *cell = &tmpCells[y][x];
+                    int aliveNeighbors = this->grid->checkCell(neighbors);
 
                     if (cell->getState()) {
                         if (aliveNeighbors != 2 && aliveNeighbors != 3) {
@@ -47,6 +51,13 @@ class GameEngine {
                             cell->setState(1);
                         };
                     };
+                };
+            };
+
+            for (int y = 0; y < grid->getHeight(); y++) {
+                for (int x = 0; x < grid->getWidth(); x++) {
+                    Cell *cell = this->grid->getCell(x, y);
+                    cell->setState(tmpCells[y][x].getState());
                 };
             };
         };
