@@ -1,3 +1,4 @@
+#include "core/gameEngine.hpp"
 #include "core/main/fileManager.hpp"
 #include <filesystem>
 #include <iostream>
@@ -6,9 +7,11 @@
 int main(int argc, char *argv[]) {
     int width;
     int height;
-    bool graphicMode = false;
+    bool useGraphicMode = false;
     bool makeconfig = false;
-    FileManager fm;
+    int iteration;
+
+    GameEngine game;
 
     for (int i = 1; i < argc; i++) {
         std::string flag = argv[i];
@@ -21,7 +24,7 @@ int main(int argc, char *argv[]) {
                       << "\n  -w ou --width <largeur>"
                       << "\n  -h ou --height <hauteur>"
                       << "\n  -g ou --graphic (terminal par defaut)"
-                      << std::endl;
+                      << "\n  -i ou --iteration <nombre>" << std::endl;
             return 0;
         } else if (flag == "-w" || flag == "--width") {
             try {
@@ -40,29 +43,51 @@ int main(int argc, char *argv[]) {
                 return 1;
             }
         } else if (flag == "-g" || flag == "--graphic") {
-            graphicMode = true;
+            useGraphicMode = true;
         } else if (flag == "-lc" || flag == "--loadconfig") {
-            if (!fm.loadConfig(value)) {
+            if (!game.fm.loadConfig(value, game.grid)) {
                 return 1;
             };
+        } else if (flag == "-i" || flag == "--iteration") {
+            try {
+                iteration = std::stoi(value);
+                if (iteration < 0) {
+                    std::cerr
+                        << "Erreur: la valeur doit être positive pour le flag '"
+                        << flag << "'" << std::endl;
+                    return 1;
+                };
+            } catch (const std::exception &e) {
+                std::cerr << "Erreur: valeur invalide pour le flag '" << flag
+                          << "'" << std::endl;
+                return 1;
+            }
         };
     };
 
-    if (!width) {
+    if (!iteration) {
+        std::cout << "Veuillez indiquer le nombre d'iteration." << std::endl;
+        return 1;
+    }
+
+    if (makeconfig && !width) {
         std::cout << "Veuillez indiquer la largeur." << std::endl;
         return 1;
-    } else if (!height) {
+    } else if (makeconfig && !height) {
         std::cout << "Veuillez indiquer la hauteur." << std::endl;
         return 1;
     }
 
     std::cout << "### INFORMATIONS ###" << std::endl;
-    std::cout << " - Mode: " << (graphicMode ? "Graphique" : "Console")
+    std::cout << " - Mode: " << (useGraphicMode ? "Graphique" : "Console")
               << std::endl;
-    std::cout << " - Fichier config: " << fm.getFileName() << std::endl;
+    std::cout << " - Fichier config: " << game.fm.getFileName() << std::endl;
 
     if (makeconfig) {
         std::cout << " - Largeur de la grille: " << width << std::endl;
         std::cout << " - Hauteur de la grille: " << height << std::endl;
     }
+
+    game.initialisation(useGraphicMode, iteration);
+    game.startSimulation();
 };
