@@ -107,3 +107,6 @@ void Grille::clear()
 {
     cellules.clear();
 }
+
+// GrilleClassique
+GrilleClassique::GrilleClassique(std::string a) : Grille(a) {}

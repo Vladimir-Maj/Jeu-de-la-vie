@@ -25,3 +25,9 @@ class Grille
     virtual void clear();
  //a faire test unitaire
 };
+
+//implémentation grille classique 
+class GrilleClassique : public Grille {
+public:
+    GrilleClassique(std::string a);
+};

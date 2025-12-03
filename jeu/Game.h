@@ -3,7 +3,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-#include "grille/GrilleClassique.h"
+#include "grille/Grille.h"
 #include <cassert>
 #include <sstream>
 #include "cellule/Cellule.h"

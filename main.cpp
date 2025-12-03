@@ -4,7 +4,6 @@
 #include <fstream>
 #include "jeu/Game.h"
 #include "grille/Grille.h"
-#include "grille/GrilleClassique.h"
 
 int main()
 {
