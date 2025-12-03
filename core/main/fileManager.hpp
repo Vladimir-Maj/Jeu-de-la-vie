@@ -1,16 +1,23 @@
+#pragma once
+
 #include "grid.hpp"
 #include <filesystem>
 #include <fstream>
 #include <iostream>
+#include <memory>
+#include <optional>
 #include <sstream>
 #include <string>
 
 class FileManager {
   private:
     std::filesystem::path filePath;
+    std::filesystem::path outputPath;
+    std::unique_ptr<Grid> gridLoadedFromConfig;
 
   public:
-    bool loadConfig(std::filesystem::path path) {
+    bool loadConfig(std::filesystem::path path,
+                    std::unique_ptr<Grid> &gameGrid) {
         if (!std::filesystem::exists(path)) {
             std::cerr << "Erreur: chemin de la configuration inexistant"
                       << std::endl;
@@ -45,6 +52,8 @@ class FileManager {
             };
         };
 
+        gameGrid = std::make_unique<Grid>(height, width);
+
         for (int y = 0; y < height; y++) {
             if (!std::getline(file, line)) {
                 std::cerr << "Erreur: colonne manquante -> y = " << y
@@ -65,6 +74,8 @@ class FileManager {
                         << ", x=" << x << ")" << value << std::endl;
                     return false;
                 }
+
+                gameGrid->setCell(x, y, value);
             };
 
             int outOfRangeWidth;
@@ -79,7 +90,8 @@ class FileManager {
             return false;
         };
 
-        std::cout << "Config bonnne" << std::endl;
+        outputPath =
+            "data/outputs/" + this->getFileName().stem().string() + "_out.txt";
         return true;
     };
 
@@ -87,5 +99,34 @@ class FileManager {
         return this->filePath.filename();
     };
 
-    // void save(Grid g, std::string f) {};
+    void makeOutput() {
+        bool status = std::filesystem::copy_file(
+            this->filePath,
+            "data/outputs/" + this->getFileName().stem().string() + "_out.txt",
+            std::filesystem::copy_options::overwrite_existing);
+        if (!status) {
+            std::cerr << "Erreur: problème lors de la création du fichier de "
+                         "sortie"
+                      << std::endl;
+        };
+    };
+
+    void save(std::unique_ptr<Grid> &grid) {
+        std::ofstream file(this->outputPath);
+
+        if (!file.is_open()) {
+            std::cerr << "Erreur: problème lors de l'ouverture du fichier"
+                      << std::endl;
+            return;
+        };
+
+        for (int y = 0; y < grid->getHeight(); y++) {
+            for (int x = 0; x < grid->getWidth(); x++) {
+                file << (grid->getCell(x, y)->getState() ? "1" : "0") << " ";
+            }
+            file << std::endl;
+        };
+
+        file.close();
+    };
 };
