@@ -12,7 +12,7 @@
 
 class FileManager {
   private:
-    std::filesystem::path filePath;
+    std::filesystem::path configPath;
     std::filesystem::path outputPath;
     std::unique_ptr<Grid> gridLoadedFromConfig;
 
@@ -25,8 +25,8 @@ class FileManager {
             return false;
         };
 
-        this->filePath = path;
-        std::ifstream file(this->filePath);
+        this->configPath = path;
+        std::ifstream file(this->configPath);
 
         if (!file.is_open()) {
             std::cerr << "Erreur: problème lors de l'ouverture du fichier"
@@ -87,25 +87,23 @@ class FileManager {
         };
 
         if (std::getline(file, line)) {
-            std::cerr << "Erreur: ligne en trop" << std::endl;
-            return false;
+            if (!line.empty() &&
+                line.find_first_not_of(" \t\r\n") != std::string::npos) {
+                std::cerr << "Erreur: ligne en trop" << std::endl;
+                return false;
+            };
         };
 
-        outputPath = "../data/outputs/" + this->getFileName().stem().string() +
-                     "_out.txt";
+        outputPath = "../data/outputs/" +
+                     this->getConfigName().stem().string() + "_out.txt";
         this->clearOutputFileIfContent();
         return true;
     };
 
     bool makeConfig(std::filesystem::path path, int height, int width,
-                    std::unique_ptr<Grid> &gameGrid) {
-        if (std::filesystem::exists(path)) {
-            std::cerr << "Erreur: le fichier existe déjà" << std::endl;
-            return false;
-        }
-
-        this->filePath = path;
-        std::ofstream file(this->filePath);
+                    std::unique_ptr<Grid> &gameGrid, bool isEmptyConfig) {
+        this->configPath = path;
+        std::ofstream file(this->configPath, std::ios::trunc);
         if (!file.is_open()) {
             std::cerr << "Erreur: problème lors de l'ouverture du fichier"
                       << std::endl;
@@ -122,7 +120,7 @@ class FileManager {
 
         for (int y = 0; y < gameGrid->getHeight(); y++) {
             for (int x = 0; x < gameGrid->getWidth(); x++) {
-                int value = distrib(gen);
+                int value = isEmptyConfig ? 0 : distrib(gen);
                 file << value << " ";
                 gameGrid->setCell(x, y, value);
             }
@@ -130,15 +128,17 @@ class FileManager {
         }
 
         file.close();
-        outputPath = "../data/outputs/" + this->getFileName().stem().string() +
-                     "_out.txt";
+        outputPath = "../data/outputs/" +
+                     this->getConfigName().stem().string() + "_out.txt";
         this->clearOutputFileIfContent();
         return true;
     }
 
-    std::filesystem::path getFileName() const {
-        return this->filePath.filename();
+    std::filesystem::path getConfigName() const {
+        return this->configPath.filename();
     };
+
+    std::filesystem::path getOutputPath() const { return this->outputPath; };
 
     void clearOutputFileIfContent() {
         if (std::filesystem::exists(this->outputPath)) {
@@ -147,7 +147,7 @@ class FileManager {
         };
     };
 
-    void save(std::unique_ptr<Grid> &grid) {
+    void saveOutput(std::unique_ptr<Grid> &grid) {
         std::ofstream file(this->outputPath, std::ios::app);
 
         if (!file.is_open()) {
@@ -166,6 +166,30 @@ class FileManager {
         file << std::endl;
 
         file.close();
+    };
+
+    bool saveConfig(std::unique_ptr<Grid> &grid) {
+        std::ofstream file(this->configPath, std::ios::trunc);
+
+        if (!file.is_open()) {
+            std::cerr << "Erreur: problème lors de l'ouverture "
+                         "du fichier"
+                      << std::endl;
+            return false;
+        };
+
+        file << grid->getHeight() << " " << grid->getWidth() << std::endl;
+
+        for (int y = 0; y < grid->getHeight(); y++) {
+            for (int x = 0; x < grid->getWidth(); x++) {
+                file << (grid->getCell(x, y)->getState() ? "1" : "0") << " ";
+            }
+            file << std::endl;
+        };
+        file << std::endl;
+
+        file.close();
+        return true;
     };
 
     bool checkSimilarOutputGrid(std::unique_ptr<Grid> &grid) {
