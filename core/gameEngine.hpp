@@ -1,8 +1,11 @@
+#pragma once
+
 #include "main/fileManager.hpp"
 #include "main/grid.hpp"
 #include "renderer/console.hpp"
 #include "renderer/display.hpp"
 #include "renderer/graphic.hpp"
+
 #include <chrono>
 #include <memory>
 #include <thread>
@@ -15,6 +18,7 @@ class GameEngine {
     int iterationCount;
     int iterationTime;
     bool toricMode;
+    bool graphicMode;
 
   public:
     void initialisation(bool useGraphicMode, int iCount = 0, int iTime = 250,
@@ -26,13 +30,18 @@ class GameEngine {
             this->renderer = std::make_unique<Console>();
         }
 
+        this->graphicMode = useGraphicMode;
         this->iterationCount = iCount;
         this->iterationTime = iTime;
         this->toricMode = toric;
     };
 
     void startSimulation() {
-        std::this_thread::sleep_for(std::chrono::milliseconds(3000));
+
+        if (!this->graphicMode) {
+            std::this_thread::sleep_for(std::chrono::milliseconds(3000));
+        };
+
         int similarOutputGrids = 0;
 
         if (iterationCount == 0) {
@@ -112,7 +121,9 @@ class GameEngine {
         this->renderer->display(this->grid);
     };
 
-    bool editionMode() { return this->renderer->editionMode(this->grid); };
+    void editionMode() {
+        return this->renderer->editionMode(this, this->grid);
+    };
 
     std::unique_ptr<Grid> &getGrid() { return this->grid; };
     FileManager &getFileManager() { return this->fm; };
