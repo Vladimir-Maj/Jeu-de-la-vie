@@ -10,7 +10,10 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # SFML 3
 find_package(SFML REQUIRED COMPONENTS Graphics Window System)
 
-add_executable(JeuDeLaVie main.cpp)
+add_executable(JeuDeLaVie
+    main.cpp
+    core/renderer/graphic.cpp
+)
 
 target_include_directories(JeuDeLaVie PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/core
