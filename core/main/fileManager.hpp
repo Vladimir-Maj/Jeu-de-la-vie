@@ -6,6 +6,7 @@
 #include <iostream>
 #include <memory>
 #include <optional>
+#include <random>
 #include <sstream>
 #include <string>
 
@@ -96,6 +97,45 @@ class FileManager {
         return true;
     };
 
+    bool makeConfig(std::filesystem::path path, int height, int width,
+                    std::unique_ptr<Grid> &gameGrid) {
+        if (std::filesystem::exists(path)) {
+            std::cerr << "Erreur: le fichier existe déjà" << std::endl;
+            return false;
+        }
+
+        this->filePath = path;
+        std::ofstream file(this->filePath);
+        if (!file.is_open()) {
+            std::cerr << "Erreur: problème lors de l'ouverture du fichier"
+                      << std::endl;
+            return false;
+        }
+
+        gameGrid = std::make_unique<Grid>(height, width);
+        file << gameGrid->getHeight() << " " << gameGrid->getWidth()
+             << std::endl;
+
+        std::random_device rd;
+        std::mt19937 gen(rd());
+        std::uniform_int_distribution<> distrib(0, 1);
+
+        for (int y = 0; y < gameGrid->getHeight(); y++) {
+            for (int x = 0; x < gameGrid->getWidth(); x++) {
+                int value = distrib(gen);
+                file << value << " ";
+                gameGrid->setCell(x, y, value);
+            }
+            file << std::endl;
+        }
+
+        file.close();
+        outputPath = "../data/outputs/" + this->getFileName().stem().string() +
+                     "_out.txt";
+        this->clearOutputFileIfContent();
+        return true;
+    }
+
     std::filesystem::path getFileName() const {
         return this->filePath.filename();
     };
@@ -111,7 +151,8 @@ class FileManager {
         std::ofstream file(this->outputPath, std::ios::app);
 
         if (!file.is_open()) {
-            std::cerr << "Erreur: problème lors de l'ouverture du fichier"
+            std::cerr << "Erreur: problème lors de l'ouverture "
+                         "du fichier"
                       << std::endl;
             return;
         };
@@ -136,7 +177,8 @@ class FileManager {
 
         std::ifstream file(this->outputPath);
         if (!file.is_open()) {
-            std::cerr << "Erreur: problème lors de l'ouverture du fichier"
+            std::cerr << "Erreur: problème lors de l'ouverture "
+                         "du fichier"
                       << std::endl;
             return false;
         }

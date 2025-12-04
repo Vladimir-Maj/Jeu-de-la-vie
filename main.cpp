@@ -5,10 +5,11 @@
 #include <string>
 
 int main(int argc, char *argv[]) {
-    int width;
-    int height;
+    int width = 0;
+    int height = 0;
     bool useGraphicMode = false;
     bool makeconfig = false;
+    std::string makeConfigPath;
     int iterationCount;
     int iterationTime = 250;
 
@@ -51,6 +52,9 @@ int main(int argc, char *argv[]) {
             if (!game.getFileManager().loadConfig(value, game.getGrid())) {
                 return 1;
             };
+        } else if (flag == "-mc" || flag == "--makeconfig") {
+            makeconfig = true;
+            makeConfigPath = value;
         } else if (flag == "-ic" || flag == "--iterationcount") {
             try {
                 iterationCount = std::stoi(value);
@@ -89,6 +93,11 @@ int main(int argc, char *argv[]) {
         std::cout << "Veuillez indiquer la hauteur." << std::endl;
         return 1;
     }
+
+    if (!game.getFileManager().makeConfig(makeConfigPath, height, width,
+                                          game.getGrid())) {
+        return 1;
+    };
 
     std::cout << "### INFORMATIONS ###" << std::endl;
     std::cout << " - Mode: " << (useGraphicMode ? "Graphique" : "Console")
