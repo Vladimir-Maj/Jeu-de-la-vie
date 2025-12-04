@@ -2,6 +2,7 @@
 #include "core/main/fileManager.hpp"
 #include <filesystem>
 #include <iostream>
+#include <memory>
 #include <string>
 
 int main(int argc, char *argv[]) {
@@ -16,7 +17,7 @@ int main(int argc, char *argv[]) {
     bool emptyConfig = false;
     bool toricMode = false;
 
-    GameEngine game;
+    std::unique_ptr<GameEngine> game = std::make_unique<GameEngine>();
 
     for (int i = 1; i < argc; i++) {
         std::string flag = argv[i];
@@ -54,7 +55,7 @@ int main(int argc, char *argv[]) {
         } else if (flag == "-g" || flag == "--graphic") {
             useGraphicMode = true;
         } else if (flag == "-lc" || flag == "--loadconfig") {
-            if (!game.getFileManager().loadConfig(value, game.getGrid())) {
+            if (!game->getFileManager().loadConfig(value, game->getGrid())) {
                 return 1;
             };
         } else if (flag == "-mc" || flag == "--makeconfig") {
@@ -106,8 +107,8 @@ int main(int argc, char *argv[]) {
     }
 
     if (makeconfig &&
-        !game.getFileManager().makeConfig(makeConfigPath, height, width,
-                                          game.getGrid(), emptyConfig)) {
+        !game->getFileManager().makeConfig(makeConfigPath, height, width,
+                                           game->getGrid(), emptyConfig)) {
         return 1;
     };
 
@@ -123,7 +124,7 @@ int main(int argc, char *argv[]) {
               << (iterationCount == 0 ? "Infini"
                                       : std::to_string(iterationCount))
               << std::endl;
-    std::cout << " - Fichier config: " << game.getFileManager().getConfigName()
+    std::cout << " - Fichier config: " << game->getFileManager().getConfigName()
               << std::endl;
 
     if (makeconfig) {
@@ -131,32 +132,14 @@ int main(int argc, char *argv[]) {
         std::cout << " - Hauteur de la grille: " << height << std::endl;
     }
 
-    game.initialisation(useGraphicMode, iterationCount, iterationTime,
-                        toricMode);
+    game->initialisation(useGraphicMode, iterationCount, iterationTime,
+                         toricMode);
 
-    if (editionMode) {
-        bool status = game.editionMode();
-        if (status) {
-            std::cout << "Mode édition: fermé" << std::endl;
-            std::cout << "Voulez-vous sauvegarder la configuration modifiée ? "
-                         "(o/n): ";
-            std::string response;
-            std::cin >> response;
-            if (response == "o") {
-                if (!game.getFileManager().saveConfig(game.getGrid())) {
-                    return 1;
-                };
-
-                std::cout << "Configuration sauvegardée dans le fichier: "
-                          << game.getFileManager().getConfigName().filename()
-                          << std::endl;
-            };
-        } else {
-            std::cout << "Mode édition: annulation" << std::endl;
-            return 0;
-        };
+    if (useGraphicMode && editionMode) {
+        game->editionMode();
+        return 0;
+    } else {
+        game->startSimulation();
+        return 0;
     };
-
-    game.startSimulation();
-    return 0;
 };
