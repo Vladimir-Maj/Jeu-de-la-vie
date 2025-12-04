@@ -9,36 +9,41 @@
 
 class GameEngine {
   private:
+    std::unique_ptr<Grid> grid;
     std::unique_ptr<Display> renderer;
+    FileManager fm;
     int iterationCount;
+    int iterationTime;
 
   public:
-    std::unique_ptr<Grid> grid;
-    FileManager fm;
-
-    void initialisation(bool useGraphicMode, int iteration) {
+    void initialisation(bool useGraphicMode, int iCount, int iTime = 250) {
         if (useGraphicMode) {
-            this->renderer = std::make_unique<Graphic>();
+            this->renderer =
+                std::make_unique<Graphic>(10, 80, 80, "Jeu de la vie");
         } else {
             this->renderer = std::make_unique<Console>();
         }
 
-        this->iterationCount = iteration;
+        this->iterationCount = iCount;
+        this->iterationTime = iTime;
     };
 
     void startSimulation() {
+        std::this_thread::sleep_for(std::chrono::seconds(3));
+
         for (int i = 0; i < this->iterationCount; i++) {
             fm.save(this->grid);
 
             this->renderer->display(this->grid);
-            std::this_thread::sleep_for(std::chrono::seconds(1));
-            std::cout << std::endl;
+            std::this_thread::sleep_for(
+                std::chrono::milliseconds(this->iterationTime));
 
-            std::vector<std::vector<Cell>> tmpCells = grid->getCells();
+            std::vector<std::vector<Cell>> tmpCells = this->grid->getCells();
 
-            for (int y = 0; y < grid->getHeight(); y++) {
-                for (int x = 0; x < grid->getWidth(); x++) {
-                    std::vector<Cell *> neighbors = grid->getNeighbors(x, y);
+            for (int y = 0; y < this->grid->getHeight(); y++) {
+                for (int x = 0; x < this->grid->getWidth(); x++) {
+                    std::vector<Cell *> neighbors =
+                        this->grid->getNeighbors(x, y);
                     Cell *cell = &tmpCells[y][x];
                     int aliveNeighbors = this->grid->checkCell(neighbors);
 
@@ -54,8 +59,8 @@ class GameEngine {
                 };
             };
 
-            for (int y = 0; y < grid->getHeight(); y++) {
-                for (int x = 0; x < grid->getWidth(); x++) {
+            for (int y = 0; y < this->grid->getHeight(); y++) {
+                for (int x = 0; x < this->grid->getWidth(); x++) {
                     Cell *cell = this->grid->getCell(x, y);
                     cell->setState(tmpCells[y][x].getState());
                 };
@@ -68,7 +73,6 @@ class GameEngine {
         this->renderer->display(this->grid);
     };
 
-    void step() {};
-    void loadConfig(std::string name) {};
-    void save(std::string name) {};
+    std::unique_ptr<Grid> &getGrid() { return this->grid; };
+    FileManager &getFileManager() { return this->fm; };
 };
