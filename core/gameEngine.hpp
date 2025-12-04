@@ -16,7 +16,7 @@ class GameEngine {
     int iterationTime;
 
   public:
-    void initialisation(bool useGraphicMode, int iCount, int iTime = 250) {
+    void initialisation(bool useGraphicMode, int iCount = 0, int iTime = 250) {
         if (useGraphicMode) {
             this->renderer =
                 std::make_unique<Graphic>(10, 80, 80, "Jeu de la vie");
@@ -29,53 +29,113 @@ class GameEngine {
     };
 
     void startSimulation() {
-        std::this_thread::sleep_for(std::chrono::seconds(3));
+        std::this_thread::sleep_for(std::chrono::milliseconds(3000));
         int similarOutputGrids = 0;
 
-        for (int i = 0; i < this->iterationCount; i++) {
-            fm.save(this->grid);
+        if (iterationCount == 0) {
+            while (true) {
+                fm.saveOutput(this->grid);
 
-            this->renderer->display(this->grid);
-            std::this_thread::sleep_for(
-                std::chrono::milliseconds(this->iterationTime));
+                this->renderer->display(this->grid);
+                std::this_thread::sleep_for(
+                    std::chrono::milliseconds(this->iterationTime));
 
-            std::vector<std::vector<Cell>> tmpCells = this->grid->getCells();
+                std::vector<std::vector<Cell>> tmpCells =
+                    this->grid->getCells();
 
-            for (int y = 0; y < this->grid->getHeight(); y++) {
-                for (int x = 0; x < this->grid->getWidth(); x++) {
-                    std::vector<Cell *> neighbors =
-                        this->grid->getNeighbors(x, y);
-                    Cell *cell = &tmpCells[y][x];
-                    int aliveNeighbors = this->grid->checkCell(neighbors);
+                for (int y = 0; y < this->grid->getHeight(); y++) {
+                    for (int x = 0; x < this->grid->getWidth(); x++) {
+                        Cell *cell = &tmpCells[y][x];
 
-                    if (cell->getState()) {
-                        if (aliveNeighbors != 2 && aliveNeighbors != 3) {
-                            cell->setState(0);
-                        };
-                    } else {
-                        if (aliveNeighbors == 3) {
-                            cell->setState(1);
+                        if (cell->isObstacle()) {
+                            continue;
+                        }
+
+                        std::vector<Cell *> neighbors =
+                            this->grid->getNeighbors(x, y);
+                        int aliveNeighbors = this->grid->checkCell(neighbors);
+
+                        if (cell->getState()) {
+                            if (aliveNeighbors != 2 && aliveNeighbors != 3) {
+                                cell->setState(0);
+                            };
+                        } else {
+                            if (aliveNeighbors == 3) {
+                                cell->setState(1);
+                            };
                         };
                     };
                 };
-            };
 
-            for (int y = 0; y < this->grid->getHeight(); y++) {
-                for (int x = 0; x < this->grid->getWidth(); x++) {
-                    Cell *cell = this->grid->getCell(x, y);
-                    cell->setState(tmpCells[y][x].getState());
+                for (int y = 0; y < this->grid->getHeight(); y++) {
+                    for (int x = 0; x < this->grid->getWidth(); x++) {
+                        Cell *cell = this->grid->getCell(x, y);
+                        cell->setState(tmpCells[y][x].getState());
+                    };
                 };
+
+                if (fm.checkSimilarOutputGrid(this->grid)) {
+                    similarOutputGrids++;
+                } else {
+                    similarOutputGrids = 0;
+                }
+
+                if (similarOutputGrids == 3) {
+                    break;
+                }
             };
+        } else {
+            for (int i = 0; i < this->iterationCount; i++) {
+                fm.saveOutput(this->grid);
 
-            if (fm.checkSimilarOutputGrid(this->grid)) {
-                similarOutputGrids++;
-            } else {
-                similarOutputGrids = 0;
-            }
+                this->renderer->display(this->grid);
+                std::this_thread::sleep_for(
+                    std::chrono::milliseconds(this->iterationTime));
 
-            if (similarOutputGrids == 3) {
-                break;
-            }
+                std::vector<std::vector<Cell>> tmpCells =
+                    this->grid->getCells();
+
+                for (int y = 0; y < this->grid->getHeight(); y++) {
+                    for (int x = 0; x < this->grid->getWidth(); x++) {
+                        Cell *cell = &tmpCells[y][x];
+
+                        if (cell->isObstacle()) {
+                            continue;
+                        }
+
+                        std::vector<Cell *> neighbors =
+                            this->grid->getNeighbors(x, y);
+                        int aliveNeighbors = this->grid->checkCell(neighbors);
+
+                        if (cell->getState()) {
+                            if (aliveNeighbors != 2 && aliveNeighbors != 3) {
+                                cell->setState(0);
+                            };
+                        } else {
+                            if (aliveNeighbors == 3) {
+                                cell->setState(1);
+                            };
+                        };
+                    };
+                };
+
+                for (int y = 0; y < this->grid->getHeight(); y++) {
+                    for (int x = 0; x < this->grid->getWidth(); x++) {
+                        Cell *cell = this->grid->getCell(x, y);
+                        cell->setState(tmpCells[y][x].getState());
+                    };
+                };
+
+                if (fm.checkSimilarOutputGrid(this->grid)) {
+                    similarOutputGrids++;
+                } else {
+                    similarOutputGrids = 0;
+                }
+
+                if (similarOutputGrids == 3) {
+                    break;
+                }
+            };
         };
     };
 
@@ -83,6 +143,8 @@ class GameEngine {
         this->renderer->clearScreen();
         this->renderer->display(this->grid);
     };
+
+    bool editionMode() { return this->renderer->editionMode(this->grid); };
 
     std::unique_ptr<Grid> &getGrid() { return this->grid; };
     FileManager &getFileManager() { return this->fm; };
