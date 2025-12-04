@@ -30,6 +30,7 @@ class GameEngine {
 
     void startSimulation() {
         std::this_thread::sleep_for(std::chrono::seconds(3));
+        int similarOutputGrids = 0;
 
         for (int i = 0; i < this->iterationCount; i++) {
             fm.save(this->grid);
@@ -65,6 +66,16 @@ class GameEngine {
                     cell->setState(tmpCells[y][x].getState());
                 };
             };
+
+            if (fm.checkSimilarOutputGrid(this->grid)) {
+                similarOutputGrids++;
+            } else {
+                similarOutputGrids = 0;
+            }
+
+            if (similarOutputGrids == 3) {
+                break;
+            }
         };
     };
 
