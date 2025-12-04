@@ -24,7 +24,7 @@ class Grid {
     int getHeight() const { return this->height; };
     int getWidth() const { return this->width; };
 
-    std::vector<Cell *> getNeighbors(int x, int y) {
+    std::vector<Cell *> getNeighbors(int x, int y, bool toric) {
         std::vector<Cell *> neighbors;
         neighbors.reserve(8);
 
@@ -38,14 +38,33 @@ class Grid {
             if (x + 1 < this->getWidth()) {
                 neighbors.push_back(&this->cells[y - 1][x + 1]);
             }
-        }
+        } else if (toric) {
+            if (x - 1 >= 0) {
+                neighbors.push_back(&this->cells[this->getHeight() - 1][x - 1]);
+            } else {
+                neighbors.push_back(
+                    &this->cells[this->getHeight() - 1][this->getWidth() - 1]);
+            }
+
+            neighbors.push_back(&this->cells[this->getHeight() - 1][x]);
+
+            if (x + 1 < this->getWidth()) {
+                neighbors.push_back(&this->cells[this->getHeight() - 1][x + 1]);
+            } else {
+                neighbors.push_back(&this->cells[this->getHeight() - 1][0]);
+            }
+        };
 
         if (x - 1 >= 0) {
             neighbors.push_back(&this->cells[y][x - 1]);
+        } else if (toric) {
+            neighbors.push_back(&this->cells[y][this->getWidth() - 1]);
         };
 
         if (x + 1 < this->getWidth()) {
             neighbors.push_back(&this->cells[y][x + 1]);
+        } else if (toric) {
+            neighbors.push_back(&this->cells[y][0]);
         };
 
         if (y + 1 < this->getHeight()) {
@@ -57,6 +76,20 @@ class Grid {
 
             if (x + 1 < this->getWidth()) {
                 neighbors.push_back(&this->cells[y + 1][x + 1]);
+            }
+        } else if (toric) {
+            if (x - 1 >= 0) {
+                neighbors.push_back(&this->cells[0][x - 1]);
+            } else {
+                neighbors.push_back(&this->cells[0][this->getWidth() - 1]);
+            }
+
+            neighbors.push_back(&this->cells[0][x]);
+
+            if (x + 1 < this->getWidth()) {
+                neighbors.push_back(&this->cells[0][x + 1]);
+            } else {
+                neighbors.push_back(&this->cells[0][0]);
             }
         };
 

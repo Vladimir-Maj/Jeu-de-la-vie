@@ -14,6 +14,7 @@ int main(int argc, char *argv[]) {
     int iterationTime = 250;
     bool editionMode = false;
     bool emptyConfig = false;
+    bool toricMode = false;
 
     GameEngine game;
 
@@ -31,6 +32,7 @@ int main(int argc, char *argv[]) {
                       << "\n  -ic ou --iterationcount <nombre>"
                       << "\n  -it ou --iterationtime <millisecondes>"
                       << "\n  --empty"
+                      << "\n  --toric"
                       << "\n  -e ou --edition" << std::endl;
             return 0;
         } else if (flag == "-w" || flag == "--width") {
@@ -62,6 +64,8 @@ int main(int argc, char *argv[]) {
             editionMode = true;
         } else if (flag == "--empty") {
             emptyConfig = true;
+        } else if (flag == "--toric") {
+            toricMode = true;
         } else if (flag == "-ic" || flag == "--iterationcount") {
             try {
                 iterationCount = std::stoi(value);
@@ -127,7 +131,8 @@ int main(int argc, char *argv[]) {
         std::cout << " - Hauteur de la grille: " << height << std::endl;
     }
 
-    game.initialisation(useGraphicMode, iterationCount, iterationTime);
+    game.initialisation(useGraphicMode, iterationCount, iterationTime,
+                        toricMode);
 
     if (editionMode) {
         bool status = game.editionMode();
