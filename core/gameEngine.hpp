@@ -14,6 +14,9 @@ class GameEngine {
     FileManager fm;
     int iterationCount;
     int iterationTime;
+    int regle1 = 2;
+    int regle2 = 3;
+    int regle3 = 3;
 
   public:
     void initialisation(bool useGraphicMode, int iCount = 0, int iTime = 250) {
@@ -56,11 +59,11 @@ class GameEngine {
                         int aliveNeighbors = this->grid->checkCell(neighbors);
 
                         if (cell->getState()) {
-                            if (aliveNeighbors != 2 && aliveNeighbors != 3) {
+                            if (aliveNeighbors != regle1 && aliveNeighbors != regle2) {
                                 cell->setState(0);
                             };
                         } else {
-                            if (aliveNeighbors == 3) {
+                            if (aliveNeighbors == regle3) {
                                 cell->setState(1);
                             };
                         };
@@ -108,11 +111,11 @@ class GameEngine {
                         int aliveNeighbors = this->grid->checkCell(neighbors);
 
                         if (cell->getState()) {
-                            if (aliveNeighbors != 2 && aliveNeighbors != 3) {
+                            if (aliveNeighbors != regle1 && aliveNeighbors != regle2) {
                                 cell->setState(0);
                             };
                         } else {
-                            if (aliveNeighbors == 3) {
+                            if (aliveNeighbors == regle3) {
                                 cell->setState(1);
                             };
                         };
@@ -148,4 +151,14 @@ class GameEngine {
 
     std::unique_ptr<Grid> &getGrid() { return this->grid; };
     FileManager &getFileManager() { return this->fm; };
+    
+    void setRules(int r1, int r2, int r3) {
+        this->regle1 = r1;
+        this->regle2 = r2;
+        this->regle3 = r3;
+    };
+    
+    int getRegle1() const { return this->regle1; };
+    int getRegle2() const { return this->regle2; };
+    int getRegle3() const { return this->regle3; };
 };

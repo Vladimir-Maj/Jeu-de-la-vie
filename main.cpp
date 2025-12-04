@@ -14,6 +14,9 @@ int main(int argc, char *argv[]) {
     int iterationTime = 250;
     bool editionMode = false;
     bool emptyConfig = false;
+    int regle1 = 2;
+    int regle2 = 3;
+    int regle3 = 3;
 
     GameEngine game;
 
@@ -30,6 +33,7 @@ int main(int argc, char *argv[]) {
                       << "\n  -g ou --graphic (terminal par defaut)"
                       << "\n  -ic ou --iterationcount <nombre>"
                       << "\n  -it ou --iterationtime <millisecondes>"
+                      << "\n  -r ou --rules <regle1> <regle2> <regle3>"
                       << "\n  --empty"
                       << "\n  -e ou --edition" << std::endl;
             return 0;
@@ -62,6 +66,20 @@ int main(int argc, char *argv[]) {
             editionMode = true;
         } else if (flag == "--empty") {
             emptyConfig = true;
+        } else if (flag == "-r" || flag == "--rules") {
+            try {
+                if (i + 3 >= argc) {
+                    std::cerr << "Erreur: --rules necessite 3 valeurs (regle1 regle2 regle3)" << std::endl;
+                    return 1;
+                }
+                regle1 = std::stoi(argv[i + 1]);
+                regle2 = std::stoi(argv[i + 2]);
+                regle3 = std::stoi(argv[i + 3]);
+                i += 3;
+            } catch (const std::exception &e) {
+                std::cerr << "Erreur: valeurs invalides pour le flag '" << flag << "'" << std::endl;
+                return 1;
+            }
         } else if (flag == "-ic" || flag == "--iterationcount") {
             try {
                 iterationCount = std::stoi(value);
@@ -127,6 +145,9 @@ int main(int argc, char *argv[]) {
         std::cout << " - Hauteur de la grille: " << height << std::endl;
     }
 
+    std::cout << " - Règles: Survie [" << regle1 << "," << regle2 << "], Naissance [" << regle3 << "]" << std::endl;
+
+    game.setRules(regle1, regle2, regle3);
     game.initialisation(useGraphicMode, iterationCount, iterationTime);
 
     if (editionMode) {
