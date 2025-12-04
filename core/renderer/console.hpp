@@ -1,4 +1,5 @@
 #include "display.hpp"
+
 #include <iostream>
 #include <memory>
 

@@ -1,7 +1,12 @@
 #pragma once
+
 #include "display.hpp"
+
 #include <SFML/Graphics.hpp>
+#include <memory>
 #include <string>
+
+class GameEngine;
 
 class Graphic : public Display {
   private:
@@ -34,7 +39,7 @@ class Graphic : public Display {
         return cellSizeDynamic;
     }
 
-    void drawGrid(const std::unique_ptr<Grid> &grid, float cellSizeDynamic,
+    void drawGrid(std::unique_ptr<Grid> &grid, float cellSizeDynamic,
                   float offsetX, float offsetY) {
         cell.setSize(
             sf::Vector2f(cellSizeDynamic - 1.f, cellSizeDynamic - 1.f));
@@ -103,7 +108,7 @@ class Graphic : public Display {
         window.setVerticalSyncEnabled(true);
         window.setKeyRepeatEnabled(false);
         window.setFramerateLimit(60);
-    }
+    };
 
     void display(std::unique_ptr<Grid> &grid) override {
         window.setTitle(this->title);
@@ -111,11 +116,12 @@ class Graphic : public Display {
         while (auto event = window.pollEvent()) {
             if (event->is<sf::Event::Closed>()) {
                 window.close();
-            }
+            };
+
             if (event->is<sf::Event::Resized>()) {
                 windowResize(event->getIf<sf::Event::Resized>());
-            }
-        }
+            };
+        };
 
         window.clear(sf::Color(30, 30, 30));
 
@@ -124,46 +130,7 @@ class Graphic : public Display {
         drawGrid(grid, cellSizeDynamic, offsetX, offsetY);
 
         window.display();
-    }
+    };
 
-    bool editionMode(std::unique_ptr<Grid> &grid) override {
-        window.setTitle("Mode édition");
-
-        while (window.isOpen()) {
-            float offsetX, offsetY;
-            float cellSizeDynamic = calculateCellSize(grid, offsetX, offsetY);
-
-            while (auto event = window.pollEvent()) {
-                if (event->is<sf::Event::Closed>()) {
-                    window.close();
-                    return false;
-                }
-
-                if (event->is<sf::Event::Resized>()) {
-                    windowResize(event->getIf<sf::Event::Resized>());
-                }
-
-                if (event->is<sf::Event::KeyPressed>()) {
-                    auto key = event->getIf<sf::Event::KeyPressed>();
-                    if (key->code == sf::Keyboard::Key::Escape) {
-                        return false;
-                    }
-                    if (key->code == sf::Keyboard::Key::Enter) {
-                        return true;
-                    }
-                }
-
-                if (event->is<sf::Event::MouseButtonPressed>()) {
-                    mouseClick(event->getIf<sf::Event::MouseButtonPressed>(),
-                               grid, cellSizeDynamic, offsetX, offsetY);
-                }
-            }
-
-            window.clear(sf::Color(30, 30, 30));
-            drawGrid(grid, cellSizeDynamic, offsetX, offsetY);
-            window.display();
-        }
-
-        return false;
-    }
+    void editionMode(GameEngine *game, std::unique_ptr<Grid> &grid) override;
 };
