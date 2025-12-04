@@ -14,9 +14,11 @@ class GameEngine {
     FileManager fm;
     int iterationCount;
     int iterationTime;
+    bool toricMode;
 
   public:
-    void initialisation(bool useGraphicMode, int iCount = 0, int iTime = 250) {
+    void initialisation(bool useGraphicMode, int iCount = 0, int iTime = 250,
+                        bool toric = false) {
         if (useGraphicMode) {
             this->renderer =
                 std::make_unique<Graphic>(10, 80, 80, "Jeu de la vie");
@@ -26,6 +28,7 @@ class GameEngine {
 
         this->iterationCount = iCount;
         this->iterationTime = iTime;
+        this->toricMode = toric;
     };
 
     void startSimulation() {
@@ -34,45 +37,7 @@ class GameEngine {
 
         if (iterationCount == 0) {
             while (true) {
-                fm.saveOutput(this->grid);
-
-                this->renderer->display(this->grid);
-                std::this_thread::sleep_for(
-                    std::chrono::milliseconds(this->iterationTime));
-
-                std::vector<std::vector<Cell>> tmpCells =
-                    this->grid->getCells();
-
-                for (int y = 0; y < this->grid->getHeight(); y++) {
-                    for (int x = 0; x < this->grid->getWidth(); x++) {
-                        Cell *cell = &tmpCells[y][x];
-
-                        if (cell->isObstacle()) {
-                            continue;
-                        }
-
-                        std::vector<Cell *> neighbors =
-                            this->grid->getNeighbors(x, y);
-                        int aliveNeighbors = this->grid->checkCell(neighbors);
-
-                        if (cell->getState()) {
-                            if (aliveNeighbors != 2 && aliveNeighbors != 3) {
-                                cell->setState(0);
-                            };
-                        } else {
-                            if (aliveNeighbors == 3) {
-                                cell->setState(1);
-                            };
-                        };
-                    };
-                };
-
-                for (int y = 0; y < this->grid->getHeight(); y++) {
-                    for (int x = 0; x < this->grid->getWidth(); x++) {
-                        Cell *cell = this->grid->getCell(x, y);
-                        cell->setState(tmpCells[y][x].getState());
-                    };
-                };
+                simulation();
 
                 if (fm.checkSimilarOutputGrid(this->grid)) {
                     similarOutputGrids++;
@@ -86,45 +51,7 @@ class GameEngine {
             };
         } else {
             for (int i = 0; i < this->iterationCount; i++) {
-                fm.saveOutput(this->grid);
-
-                this->renderer->display(this->grid);
-                std::this_thread::sleep_for(
-                    std::chrono::milliseconds(this->iterationTime));
-
-                std::vector<std::vector<Cell>> tmpCells =
-                    this->grid->getCells();
-
-                for (int y = 0; y < this->grid->getHeight(); y++) {
-                    for (int x = 0; x < this->grid->getWidth(); x++) {
-                        Cell *cell = &tmpCells[y][x];
-
-                        if (cell->isObstacle()) {
-                            continue;
-                        }
-
-                        std::vector<Cell *> neighbors =
-                            this->grid->getNeighbors(x, y);
-                        int aliveNeighbors = this->grid->checkCell(neighbors);
-
-                        if (cell->getState()) {
-                            if (aliveNeighbors != 2 && aliveNeighbors != 3) {
-                                cell->setState(0);
-                            };
-                        } else {
-                            if (aliveNeighbors == 3) {
-                                cell->setState(1);
-                            };
-                        };
-                    };
-                };
-
-                for (int y = 0; y < this->grid->getHeight(); y++) {
-                    for (int x = 0; x < this->grid->getWidth(); x++) {
-                        Cell *cell = this->grid->getCell(x, y);
-                        cell->setState(tmpCells[y][x].getState());
-                    };
-                };
+                simulation();
 
                 if (fm.checkSimilarOutputGrid(this->grid)) {
                     similarOutputGrids++;
@@ -138,6 +65,47 @@ class GameEngine {
             };
         };
     };
+
+    void simulation() {
+        fm.saveOutput(this->grid);
+
+        this->renderer->display(this->grid);
+        std::this_thread::sleep_for(
+            std::chrono::milliseconds(this->iterationTime));
+
+        std::vector<std::vector<Cell>> tmpCells = this->grid->getCells();
+
+        for (int y = 0; y < this->grid->getHeight(); y++) {
+            for (int x = 0; x < this->grid->getWidth(); x++) {
+                Cell *cell = &tmpCells[y][x];
+
+                if (cell->isObstacle()) {
+                    continue;
+                }
+
+                std::vector<Cell *> neighbors =
+                    this->grid->getNeighbors(x, y, this->toricMode);
+                int aliveNeighbors = this->grid->checkCell(neighbors);
+
+                if (cell->getState()) {
+                    if (aliveNeighbors != 2 && aliveNeighbors != 3) {
+                        cell->setState(0);
+                    };
+                } else {
+                    if (aliveNeighbors == 3) {
+                        cell->setState(1);
+                    };
+                };
+            };
+        };
+
+        for (int y = 0; y < this->grid->getHeight(); y++) {
+            for (int x = 0; x < this->grid->getWidth(); x++) {
+                Cell *cell = this->grid->getCell(x, y);
+                cell->setState(tmpCells[y][x].getState());
+            };
+        };
+    }
 
     void draw() {
         this->renderer->clearScreen();
