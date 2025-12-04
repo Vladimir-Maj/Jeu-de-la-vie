@@ -126,4 +126,67 @@ class FileManager {
 
         file.close();
     };
+
+    bool checkSimilarOutputGrid(std::unique_ptr<Grid> &grid) {
+        if (!std::filesystem::exists(this->outputPath)) {
+            std::cerr << "Erreur: le fichier de sortie n'existe pas"
+                      << std::endl;
+            return false;
+        }
+
+        std::ifstream file(this->outputPath);
+        if (!file.is_open()) {
+            std::cerr << "Erreur: problème lors de l'ouverture du fichier"
+                      << std::endl;
+            return false;
+        }
+
+        std::vector<std::string> fullLines;
+        std::string line;
+        while (std::getline(file, line)) {
+            fullLines.push_back(line);
+        }
+        file.close();
+
+        if (fullLines.empty()) {
+            std::cerr << "Erreur: fichier vide" << std::endl;
+            return false;
+        }
+
+        std::vector<std::string> lastBlock;
+        for (int i = fullLines.size() - 1; i >= 0; i--) {
+            if (fullLines[i].empty() || fullLines[i].find_first_not_of(
+                                            " \t\r\n") == std::string::npos) {
+                if (!lastBlock.empty()) {
+                    break;
+                }
+                continue;
+            }
+            lastBlock.insert(lastBlock.begin(), fullLines[i]);
+        }
+
+        if (lastBlock.empty()) {
+            std::cerr << "Erreur: aucun bloc trouvé" << std::endl;
+            return false;
+        }
+
+        if (lastBlock.size() != grid->getHeight()) {
+            return false;
+        }
+
+        for (int y = 0; y < grid->getHeight(); y++) {
+            std::istringstream lastIteration(lastBlock[y]);
+            for (int x = 0; x < grid->getWidth(); x++) {
+                int value;
+                if (!(lastIteration >> value)) {
+                    return false;
+                }
+                if (value != grid->getCell(x, y)->getState()) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    };
 };
