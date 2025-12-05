@@ -22,7 +22,7 @@ add_executable(JeuDeLaVie
     core/src/cells/cellObstacle.cpp
     core/renderer/graphic.cpp
     core/renderer/console.cpp
-    core/cmd.cpp
+    core/appManager.cpp
 )
 
 target_include_directories(JeuDeLaVie PRIVATE
