@@ -12,12 +12,19 @@ find_package(SFML REQUIRED COMPONENTS Graphics Window System)
 
 add_executable(JeuDeLaVie
     main.cpp
+    core/gameEngine.cpp
+    core/src/fileManager.cpp
+    core/src/grid.cpp
+    core/src/cells/cell.cpp
+    core/src/cells/cellSimple.cpp
+    core/src/cells/cellObstacle.cpp
     core/renderer/graphic.cpp
+    core/renderer/console.cpp
 )
 
 target_include_directories(JeuDeLaVie PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/core
-    ${CMAKE_CURRENT_SOURCE_DIR}/core/main
+    ${CMAKE_CURRENT_SOURCE_DIR}/core/src
     ${CMAKE_CURRENT_SOURCE_DIR}/core/renderer
 )
 
