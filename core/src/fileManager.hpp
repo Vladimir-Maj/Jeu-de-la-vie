@@ -24,4 +24,6 @@ class FileManager {
     void saveOutput(std::unique_ptr<Grid> &grid);
     bool saveConfig(std::unique_ptr<Grid> &grid);
     bool checkSimilarOutputGrid(std::unique_ptr<Grid> &grid);
+
+    bool isFileExists(const std::filesystem::path path) const;
 };

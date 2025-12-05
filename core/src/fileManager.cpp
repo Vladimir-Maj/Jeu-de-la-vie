@@ -10,9 +10,7 @@
 
 bool FileManager::loadConfig(std::filesystem::path path,
                              std::unique_ptr<Grid> &gameGrid) {
-    if (!std::filesystem::exists(path)) {
-        std::cerr << "Erreur: chemin de la configuration inexistant"
-                  << std::endl;
+    if (!isFileExists(path)) {
         return false;
     };
 
@@ -131,6 +129,15 @@ std::filesystem::path FileManager::getOutputPath() const {
     return this->outputPath;
 }
 
+bool FileManager::isFileExists(const std::filesystem::path path) const {
+    if (std::filesystem::exists(path)) {
+        return true;
+    } else {
+        std::cerr << "Erreur: le fichier n'existe pas : " << path << std::endl;
+        return false;
+    };
+};
+
 void FileManager::clearOutputFileIfContent() {
     if (std::filesystem::exists(this->outputPath)) {
         std::ofstream file(this->outputPath, std::ios::trunc);
@@ -186,8 +193,7 @@ bool FileManager::saveConfig(std::unique_ptr<Grid> &grid) {
 }
 
 bool FileManager::checkSimilarOutputGrid(std::unique_ptr<Grid> &grid) {
-    if (!std::filesystem::exists(this->outputPath)) {
-        std::cerr << "Erreur: le fichier de sortie n'existe pas" << std::endl;
+    if (!isFileExists(this->outputPath)) {
         return false;
     }
 
