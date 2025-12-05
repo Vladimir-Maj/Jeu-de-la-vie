@@ -1,6 +1,6 @@
 #pragma once
 
-#include "main/grid.hpp"
+#include "src/grid.hpp"
 #include <memory>
 
 class GameEngine;
