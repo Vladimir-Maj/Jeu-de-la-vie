@@ -145,7 +145,7 @@ Le projet inclut des tests unitaires permettant de vérifier automatiquement :
 
 ### Classes principales
 
-- **`cmd`** : Parseur des arguments CLI
+- **`AppManager`** : Parseur des arguments CLI
 - **`GameEngine`** : Orchestrateur principal (gère la Grid, l'affichage, la simulation)
 - **`Grid`** : Grille 2D contenant les cellules, calcul des voisins
 - **`Cell`** (abstraite) : Classe de base polymorphe
@@ -155,6 +155,7 @@ Le projet inclut des tests unitaires permettant de vérifier automatiquement :
   - **`Console`** : Rendu ASCII
   - **`Graphic`** : Rendu SFML 3
 - **`FileManager`** : Gestion I/O (chargement/sauvegarde)
+- **'test_unitaire'** : test unitaire
 
 
 
