@@ -19,42 +19,28 @@ void GameEngine::startSimulation() {
 
     if (!this->graphicMode) {
         std::this_thread::sleep_for(std::chrono::milliseconds(3000));
-    }
+    };
 
     int similarOutputGrids = 0;
 
     if (iterationCount == 0) {
         while (true) {
-            simulation();
-
-            if (fm.checkSimilarOutputGrid(this->grid)) {
-                similarOutputGrids++;
-            } else {
-                similarOutputGrids = 0;
-            }
-
-            if (similarOutputGrids == 3) {
+            bool mustBreak = simulation(similarOutputGrids);
+            if (mustBreak) {
                 break;
-            }
-        }
+            };
+        };
     } else {
         for (int i = 0; i < this->iterationCount; i++) {
-            simulation();
-
-            if (fm.checkSimilarOutputGrid(this->grid)) {
-                similarOutputGrids++;
-            } else {
-                similarOutputGrids = 0;
-            }
-
-            if (similarOutputGrids == 3) {
+            bool mustBreak = simulation(similarOutputGrids);
+            if (mustBreak) {
                 break;
-            }
-        }
-    }
-}
+            };
+        };
+    };
+};
 
-void GameEngine::simulation() {
+bool GameEngine::simulation(int &similarOutputGrids) {
     fm.saveOutput(this->grid);
 
     this->renderer->display(this->grid);
@@ -86,6 +72,17 @@ void GameEngine::simulation() {
             this->grid->setCell(x, y, newStates[y][x]);
         }
     }
+
+    if (this->fm.checkSimilarOutputGrid(this->grid)) {
+        similarOutputGrids++;
+    } else {
+        similarOutputGrids = 0;
+    }
+
+    if (similarOutputGrids == 3) {
+        return true;
+    }
+    return false;
 }
 
 void GameEngine::draw() {

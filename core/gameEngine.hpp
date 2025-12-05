@@ -27,7 +27,7 @@ class GameEngine {
                         bool toric = false);
 
     void startSimulation();
-    void simulation();
+    bool simulation(int &similarOutputGrids);
     void draw();
     void editionMode();
 
