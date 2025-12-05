@@ -1,4 +1,5 @@
 #include "gameEngine.hpp"
+#include "src/rules/conwayRule.hpp"
 
 void GameEngine::initialisation(bool useGraphicMode, int iCount, int iTime,
                                 bool toric) {
@@ -76,19 +77,7 @@ void GameEngine::simulation() {
                 this->grid->getNeighbors(x, y, this->toricMode);
             int aliveNeighbors = this->grid->checkCell(neighbors);
 
-            if (cell->getState() == CellState::ALIVE) {
-                if (aliveNeighbors == 2 || aliveNeighbors == 3) {
-                    newStates[y][x] = CellState::ALIVE;
-                } else {
-                    newStates[y][x] = CellState::DEATH;
-                }
-            } else {
-                if (aliveNeighbors == 3) {
-                    newStates[y][x] = CellState::ALIVE;
-                } else {
-                    newStates[y][x] = CellState::DEATH;
-                }
-            }
+            this->rule->useRule(x, y, cell, newStates, aliveNeighbors);
         }
     }
 
@@ -108,6 +97,8 @@ void GameEngine::editionMode() {
     return this->renderer->editionMode(this, this->grid);
 }
 
-std::unique_ptr<Grid> &GameEngine::getGrid() { return this->grid; }
+std::unique_ptr<Rule> &GameEngine::getRule() { return this->rule; };
 
-FileManager &GameEngine::getFileManager() { return this->fm; }
+std::unique_ptr<Grid> &GameEngine::getGrid() { return this->grid; };
+
+FileManager &GameEngine::getFileManager() { return this->fm; };

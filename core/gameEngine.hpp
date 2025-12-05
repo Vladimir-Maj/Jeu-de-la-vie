@@ -5,6 +5,7 @@
 #include "renderer/graphic.hpp"
 #include "src/fileManager.hpp"
 #include "src/grid.hpp"
+#include "src/rules/conwayRule.hpp"
 
 #include <chrono>
 #include <memory>
@@ -19,6 +20,7 @@ class GameEngine {
     int iterationTime;
     bool toricMode;
     bool graphicMode;
+    std::unique_ptr<Rule> rule = std::make_unique<ConwayRule>();
 
   public:
     void initialisation(bool useGraphicMode, int iCount = 0, int iTime = 250,
@@ -29,6 +31,7 @@ class GameEngine {
     void draw();
     void editionMode();
 
+    std::unique_ptr<Rule> &getRule();
     std::unique_ptr<Grid> &getGrid();
     FileManager &getFileManager();
 };
