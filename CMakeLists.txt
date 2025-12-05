@@ -15,11 +15,14 @@ add_executable(JeuDeLaVie
     core/gameEngine.cpp
     core/src/fileManager.cpp
     core/src/grid.cpp
+    core/src/rules/rule.cpp
+    core/src/rules/conwayRule.cpp
     core/src/cells/cell.cpp
     core/src/cells/cellSimple.cpp
     core/src/cells/cellObstacle.cpp
     core/renderer/graphic.cpp
     core/renderer/console.cpp
+    core/cmd.cpp
 )
 
 target_include_directories(JeuDeLaVie PRIVATE
