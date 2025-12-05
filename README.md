@@ -156,18 +156,5 @@ Le projet inclut des tests unitaires permettant de vérifier automatiquement :
   - **`Graphic`** : Rendu SFML 3
 - **`FileManager`** : Gestion I/O (chargement/sauvegarde)
 
-### Patterns et Principes POO
 
-- **Strategy Pattern** : Hiérarchie Display (Console/Graphic interchangeables)
-- **Polymorphisme** : Cell abstraite, Display abstraite
-- **Composition** : GameEngine contient Grid, Display, FileManager
-- **RAII** : Gestion mémoire via `std::unique_ptr`
-- **Encapsulation** : Membres privés/protégés, accesseurs publics
 
-## Documentation
-
-Pour une documentation détaillée, consultez :
-- `Diagrammes/diagramme_classes.md` : Diagramme UML complet
-- `Diagrammes/diagramme_sequence.md` : Flux de séquence
-- `Diagrammes/diagramme_activite.md` : Flux d'activité
-- `Diagrammes/diagramme_cas_utilisation.md` : Cas d'utilisation
