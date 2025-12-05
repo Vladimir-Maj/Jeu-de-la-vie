@@ -103,25 +103,31 @@ AppManager::AppManager(int argc, char *argv[]) {
             }
         };
     };
-}
-
-int AppManager::execute() {
-    if (this->shouldExit) {
-        return this->exitCode;
-    }
 
     if (this->makeconfig && !this->width) {
         std::cout << "Veuillez indiquer la largeur." << std::endl;
-        return 1;
+        this->shouldExit = true;
+        this->exitCode = 1;
+        return;
     } else if (this->makeconfig && !this->height) {
         std::cout << "Veuillez indiquer la hauteur." << std::endl;
-        return 1;
+        this->shouldExit = true;
+        this->exitCode = 1;
+        return;
     }
 
     if (this->makeconfig && !this->game->getFileManager().makeConfig(
                                 this->makeConfigPath, this->height, this->width,
                                 this->game->getGrid(), this->emptyConfig)) {
-        return 1;
+        this->shouldExit = true;
+        this->exitCode = 1;
+        return;
+    };
+}
+
+int AppManager::execute() {
+    if (this->shouldExit) {
+        return this->exitCode;
     };
 
     std::cout << "### INFORMATIONS ###" << std::endl;
