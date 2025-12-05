@@ -11,9 +11,9 @@ Deux modes sont disponibles :
 ## Prérequis
 
 ### Système et Outils
-- **Système** : Linux (Ubuntu/Debian recommandé)
-- **Compilation** : `g++`, `cmake`, `ninja`, `git`
-- **Bibliothèques de développement** : X11, OpenGL, audio (OpenAL, Vorbis/FLAC), FreeType, etc.
+- **Système** : Linux (Ubuntu/Ark)
+- **Compilation** : `g++`, `cmake`
+- **Bibliothèques de développement** : STL
 - **SFML 3** : compilé et installé localement dans le dossier utilisateur
 
 ## Installation et Compilation
