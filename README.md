@@ -9,7 +9,7 @@ Implémentation du Jeu de la vie de Conway en C++ avec une architecture orienté
 - Dépendances pour SFML 3 : X11, OpenGL, audio (OpenAL, Vorbis/FLAC), FreeType, etc.
 - SFML 3 compilé et installé localement (ex. `$HOME/.local/sfml3`)
 
-### Installation rapide des paquets (Ubuntu/Debian)
+### Installation rapide des paquets (Ubuntu/Ark)
 ```bash
 sudo apt update && sudo apt install -y \
   build-essential cmake ninja-build pkg-config git \
