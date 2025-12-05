@@ -1,5 +1,6 @@
-#include "gameEngine.hpp"
 #include "cmd.hpp"
+#include "gameEngine.hpp"
+
 #include <iostream>
 #include <memory>
 #include <string>
@@ -101,7 +102,6 @@ cmd::cmd(int argc, char *argv[]) {
             }
         };
     };
-
 }
 
 int cmd::run() {
@@ -126,8 +126,10 @@ int cmd::run() {
     std::cout << "### INFORMATIONS ###" << std::endl;
 
     if (editionMode) {
-        std::cout << " - Mode: Edition" << std::endl;
+        std::cout << " - Mode edition: lance" << std::endl;
     };
+
+    std::cout << " - Regle: " << game->getRule()->getName() << std::endl;
 
     std::cout << " - Affiche: " << (useGraphicMode ? "Graphique" : "Console")
               << std::endl;
@@ -153,5 +155,4 @@ int cmd::run() {
         game->startSimulation();
         return 0;
     }
-
 }
