@@ -36,17 +36,35 @@ sudo apt install -y build-essential cmake ninja-build pkg-config git \
   libopenal-dev libflac-dev libvorbis-dev libogg-dev libvorbisenc2 libvorbisfile3
 
 sudo ldconfig
+
+# 3. Télécharger le code de la SFML à l'intérieur du projet
+git clone https://github.com/SFML/SFML.git
 ```
 
-### 3. Compiler et installer SFML 3 localement
+### 3. Compiler et installer SFML 3 localement (mode statique)
 
 ```bash
-cmake -S SFML -B SFML/build -GNinja \
-  -DCMAKE_BUILD_TYPE=Release \
-  -DCMAKE_INSTALL_PREFIX=$HOME/.local/sfml3
 
+# 1. Compiler et installer la SFML (le mode statique est choisi par défaut)
+cmake -S SFML -B SFML/build -GNinja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$HOME/.local/sfml3
 cmake --build SFML/build
 cmake --install SFML/build
+
+# 2. Configurer le jeu en ajoutant l'option pour accepter la version statique, puis compiler
+cmake -S . -B build -GNinja -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=$HOME/.local/sfml3 -DSFML_STATIC_LIBRARIES=ON
+cmake --build build
+
+```
+### ou Compiler et installer SFML 3 en mode partager
+```
+# 1. Compiler et installer la SFML en forçant le mode partagé
+cmake -S SFML -B SFML/build -GNinja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$HOME/.local/sfml3 -DBUILD_SHARED_LIBS=ON
+cmake --build SFML/build
+cmake --install SFML/build
+
+# 2. Configurer et compiler le jeu normalement
+cmake -S . -B build -GNinja -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=$HOME/.local/sfml3
+cmake --build build
 ```
 
 ### 4. Configurer et compiler le projet
