@@ -67,15 +67,7 @@ cmake -S . -B build -GNinja -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=$HOME
 cmake --build build
 ```
 
-### 4. Configurer et compiler le projet
 
-```bash
-cmake -S . -B build -GNinja \
-  -DCMAKE_BUILD_TYPE=Release \
-  -DCMAKE_PREFIX_PATH=$HOME/.local/sfml3
-
-cmake --build build
-```
 
 L'exécutable est généré dans `build/JeuDeLaVie`.
 
