@@ -30,6 +30,22 @@ std::vector<Cell *> Grid::getNeighbors(int x, int y, bool toric) {
     std::vector<Cell *> neighbors;
     neighbors.reserve(8);
 
+    if (toric) {
+        for (int dy = -1; dy <= 1; ++dy) {
+            for (int dx = -1; dx <= 1; ++dx) {
+                if (dx == 0 && dy == 0) {
+                    continue;
+                }
+
+                int nx = (x + dx + this->getWidth()) % this->getWidth();
+                int ny = (y + dy + this->getHeight()) % this->getHeight();
+                neighbors.push_back(this->cells[ny][nx].get());
+            }
+        }
+
+        return neighbors;
+    }
+
     if (y - 1 >= 0) {
         if (x - 1 >= 0) {
             neighbors.push_back(this->cells[y - 1][x - 1].get());
@@ -40,35 +56,14 @@ std::vector<Cell *> Grid::getNeighbors(int x, int y, bool toric) {
         if (x + 1 < this->getWidth()) {
             neighbors.push_back(this->cells[y - 1][x + 1].get());
         }
-    } else if (toric) {
-        if (x - 1 >= 0) {
-            neighbors.push_back(
-                this->cells[this->getHeight() - 1][x - 1].get());
-        } else {
-            neighbors.push_back(
-                this->cells[this->getHeight() - 1][this->getWidth() - 1].get());
-        }
-
-        neighbors.push_back(this->cells[this->getHeight() - 1][x].get());
-
-        if (x + 1 < this->getWidth()) {
-            neighbors.push_back(
-                this->cells[this->getHeight() - 1][x + 1].get());
-        } else {
-            neighbors.push_back(this->cells[this->getHeight() - 1][0].get());
-        }
     }
 
     if (x - 1 >= 0) {
         neighbors.push_back(this->cells[y][x - 1].get());
-    } else if (toric) {
-        neighbors.push_back(this->cells[y][this->getWidth() - 1].get());
     }
 
     if (x + 1 < this->getWidth()) {
         neighbors.push_back(this->cells[y][x + 1].get());
-    } else if (toric) {
-        neighbors.push_back(this->cells[y][0].get());
     }
 
     if (y + 1 < this->getHeight()) {
@@ -80,20 +75,6 @@ std::vector<Cell *> Grid::getNeighbors(int x, int y, bool toric) {
 
         if (x + 1 < this->getWidth()) {
             neighbors.push_back(this->cells[y + 1][x + 1].get());
-        }
-    } else if (toric) {
-        if (x - 1 >= 0) {
-            neighbors.push_back(this->cells[0][x - 1].get());
-        } else {
-            neighbors.push_back(this->cells[0][this->getWidth() - 1].get());
-        }
-
-        neighbors.push_back(this->cells[0][x].get());
-
-        if (x + 1 < this->getWidth()) {
-            neighbors.push_back(this->cells[0][x + 1].get());
-        } else {
-            neighbors.push_back(this->cells[0][0].get());
         }
     }
 
